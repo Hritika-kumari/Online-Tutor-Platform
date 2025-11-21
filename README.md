@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🎓 Online Tutoring & Session Booking Platform
 
 A full-stack Django-based web platform for **connecting students and tutors**, managing **session bookings**, **subjects**, **availability**, **materials**, and **ratings**.
@@ -265,3 +266,6 @@ MIT License
 Django Developer  
 📧 your-email@example.com  
 🌐 GitHub Profile
+=======
+# Online-Tutor-Platform
+>>>>>>> 7ba8b8c96981c643deedb3c44cc14492987027dc
