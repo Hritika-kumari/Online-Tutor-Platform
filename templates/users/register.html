@@ -1,0 +1,106 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Register - Online Tutoring Platform{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto animate-fade-in">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+    <div class="text-center mb-8">
+      <div
+        class="inline-block p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4"
+      >
+        <i class="fas fa-user-plus text-white text-3xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
+      <p class="text-gray-600">Join our learning community</p>
+    </div>
+
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+      <div>
+        <label for="id_username" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-user mr-2 text-blue-500"></i>Username
+        </label>
+        <input
+          type="text"
+          name="username"
+          id="id_username"
+          required
+          placeholder="Choose a username"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        />
+      </div>
+      <div>
+        <label for="id_email" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-envelope mr-2 text-blue-500"></i>Email
+        </label>
+        <input
+          type="email"
+          name="email"
+          id="id_email"
+          required
+          placeholder="Enter your email"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        />
+      </div>
+      <div>
+        <label for="id_password" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-lock mr-2 text-blue-500"></i>Password
+        </label>
+        <input
+          type="password"
+          name="password"
+          id="id_password"
+          required
+          placeholder="Create a password"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        />
+      </div>
+      <div>
+        <label for="id_phone" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-phone mr-2 text-blue-500"></i>Phone (Optional)
+        </label>
+        <input
+          type="text"
+          name="phone"
+          id="id_phone"
+          placeholder="Enter your phone number"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        />
+      </div>
+      <div>
+        <label for="id_role" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-user-tag mr-2 text-blue-500"></i>I want to
+        </label>
+        <select
+          name="role"
+          id="id_role"
+          required
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        >
+          <option value="student">📚 Learn as a Student</option>
+          <option value="tutor">👨‍🏫 Teach as a Tutor</option>
+        </select>
+      </div>
+      <button
+        type="submit"
+        class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-xl hover:from-green-700 hover:to-emerald-700 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+      >
+        <i class="fas fa-user-plus mr-2"></i>Create Account
+      </button>
+    </form>
+
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <p class="text-center text-gray-600">
+        Already have an account?
+        <a
+          href="{% url 'login' %}"
+          class="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
+        >
+          Login here
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

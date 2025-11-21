@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}Tutor Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <!-- Profile Header -->
+  <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl shadow-2xl p-8 mb-8 text-white">
+    <div class="flex flex-col md:flex-row items-center md:items-start justify-between">
+      <div class="flex items-center space-x-6 mb-6 md:mb-0">
+        <div class="relative">
+          {% if tutor.user.profile_picture %}
+          <img src="{{ tutor.user.profile_picture.url }}" alt="{{ tutor.user.username }}" class="w-32 h-32 rounded-full border-4 border-white/30 object-cover shadow-xl" />
+          {% else %}
+          <div class="w-32 h-32 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-4xl font-bold border-4 border-white/30">
+            {{ tutor.user.username|first|upper }}
+          </div>
+          {% endif %}
+          <div class="absolute bottom-0 right-0 w-8 h-8 {% if tutor.is_approved %}bg-green-500{% else %}bg-yellow-500{% endif %} rounded-full border-4 border-white"></div>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold mb-2">
+            {{ tutor.user.get_full_name|default:tutor.user.username }}
+          </h1>
+          <p class="text-blue-100 text-lg mb-2">@{{ tutor.user.username }}</p>
+          <div class="flex items-center space-x-4 mb-3">
+            <div class="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+              <i class="fas fa-star text-yellow-300"></i>
+              <span class="font-bold">{{ tutor.average_rating|floatformat:1 }} / 5.0</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+              <i class="fas fa-briefcase"></i>
+              <span>{{ tutor.experience_years }} years</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+              <i class="fas fa-dollar-sign"></i>
+              <span>${{ tutor.hourly_rate }}/hour</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4 text-sm">
+            <span class="flex items-center space-x-1">
+              <i class="fas fa-envelope"></i>
+              <span>{{ tutor.user.email }}</span>
+            </span>
+            {% if tutor.user.phone %}
+            <span class="flex items-center space-x-1">
+              <i class="fas fa-phone"></i>
+              <span>{{ tutor.user.phone }}</span>
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <a href="{% url 'edit_tutor_profile' %}" class="px-6 py-3 bg-white text-blue-600 rounded-xl hover:bg-blue-50 font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center space-x-2">
+        <i class="fas fa-edit"></i>
+        <span>Edit Profile</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="p-3 bg-white/20 rounded-xl">
+          <i class="fas fa-calendar-check text-2xl"></i>
+        </div>
+        <span class="text-3xl font-bold">{{ total_bookings }}</span>
+      </div>
+      <h3 class="font-semibold text-blue-100">Total Bookings</h3>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="p-3 bg-white/20 rounded-xl">
+          <i class="fas fa-star text-2xl"></i>
+        </div>
+        <span class="text-3xl font-bold">{{ total_ratings }}</span>
+      </div>
+      <h3 class="font-semibold text-green-100">Total Ratings</h3>
+    </div>
+
+    <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="p-3 bg-white/20 rounded-xl">
+          <i class="fas fa-book text-2xl"></i>
+        </div>
+        <span class="text-3xl font-bold">{{ subjects.count }}</span>
+      </div>
+      <h3 class="font-semibold text-purple-100">Subjects</h3>
+    </div>
+
+    <div class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+      <div class="flex items-center justify-between mb-4">
+        <div class="p-3 bg-white/20 rounded-xl">
+          <i class="fas fa-check-circle text-2xl"></i>
+        </div>
+        <span class="text-3xl font-bold">{% if tutor.is_approved %}✓{% else %}⏳{% endif %}</span>
+      </div>
+      <h3 class="font-semibold text-yellow-100">Status</h3>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- About Section -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+        <i class="fas fa-user text-blue-500"></i>
+        <span>About Me</span>
+      </h2>
+      <p class="text-gray-600 leading-relaxed mb-6">
+        {{ tutor.bio|default:"No bio available. Click 'Edit Profile' to add your bio." }}
+      </p>
+      <div class="space-y-3">
+        <div class="flex items-center text-gray-600">
+          <i class="fas fa-briefcase w-5 text-blue-500 mr-3"></i>
+          <span>Experience: {{ tutor.experience_years }} years</span>
+        </div>
+        <div class="flex items-center text-gray-600">
+          <i class="fas fa-dollar-sign w-5 text-green-500 mr-3"></i>
+          <span>Hourly Rate: ${{ tutor.hourly_rate }}/hour</span>
+        </div>
+        <div class="flex items-center text-gray-600">
+          <i class="fas fa-calendar-alt w-5 text-purple-500 mr-3"></i>
+          <span>Member since: {{ tutor.user.created_at|date:"F Y" }}</span>
+        </div>
+        <div class="flex items-center text-gray-600">
+          <i class="fas fa-user-tag w-5 text-orange-500 mr-3"></i>
+          <span>Role: {{ tutor.user.get_role_display }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subjects & Recent Activity -->
+    <div class="space-y-6">
+      <!-- Subjects -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+          <i class="fas fa-book text-blue-500"></i>
+          <span>Subjects</span>
+        </h2>
+        <div class="flex flex-wrap gap-3">
+          {% for tutor_subject in subjects %}
+          <span class="px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 rounded-full font-semibold border border-blue-200">
+            <i class="fas fa-check-circle mr-2"></i>{{ tutor_subject.subject.name }}
+          </span>
+          {% empty %}
+          <p class="text-gray-500">No subjects added yet.</p>
+          {% endfor %}
+        </div>
+        <a href="{% url 'add_subject' %}" class="mt-4 inline-block text-blue-600 hover:text-blue-700 font-semibold text-sm">
+          <i class="fas fa-plus mr-1"></i>Add Subject
+        </a>
+      </div>
+
+      <!-- Recent Bookings -->
+      <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+            <i class="fas fa-calendar-check text-blue-500"></i>
+            <span>Recent Bookings</span>
+          </h2>
+          <a href="{% url 'tutor_dashboard' %}" class="text-blue-600 hover:text-blue-700 font-semibold text-sm">
+            View All <i class="fas fa-arrow-right ml-1"></i>
+          </a>
+        </div>
+        <div class="space-y-4">
+          {% for booking in bookings %}
+          <div class="border-l-4 border-blue-500 pl-4 py-2 hover:bg-gray-50 rounded-r-lg transition-colors">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-semibold text-gray-800">{{ booking.student.user.username }}</span>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold {% if booking.status == 'accepted' %}bg-green-100 text-green-800{% elif booking.status == 'rejected' %}bg-red-100 text-red-800{% elif booking.status == 'completed' %}bg-blue-100 text-blue-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                {{ booking.get_status_display }}
+              </span>
+            </div>
+            <p class="text-sm text-gray-600">
+              <i class="fas fa-book mr-1"></i>{{ booking.subject.name }} •
+              <i class="fas fa-calendar mr-1"></i>{{ booking.date }} •
+              <i class="fas fa-clock mr-1"></i>{{ booking.start_time }}
+            </p>
+          </div>
+          {% empty %}
+          <div class="text-center py-8">
+            <i class="fas fa-calendar-times text-4xl text-gray-300 mb-3"></i>
+            <p class="text-gray-500">No bookings yet</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Ratings -->
+  {% if ratings %}
+  <div class="mt-8 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center space-x-2">
+      <i class="fas fa-star text-yellow-500"></i>
+      <span>Recent Reviews</span>
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% for rating in ratings %}
+      <div class="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-semibold text-gray-800">{{ rating.student.user.username }}</span>
+          <div class="flex">
+            {% for i in "12345" %}
+            <i class="fas fa-star {% if forloop.counter <= rating.rating %}text-yellow-500{% else %}text-gray-300{% endif %} text-sm"></i>
+            {% endfor %}
+          </div>
+        </div>
+        <p class="text-gray-600 text-sm mb-2">
+          {{ rating.review|default:"No review provided." }}
+        </p>
+        <p class="text-xs text-gray-400">
+          <i class="fas fa-calendar mr-1"></i>{{ rating.created_at|date:"M d, Y" }}
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

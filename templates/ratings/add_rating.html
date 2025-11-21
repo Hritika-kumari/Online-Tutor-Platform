@@ -1,0 +1,69 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Rate Tutor{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-fade-in">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+    <div class="text-center mb-8">
+      <div
+        class="inline-block p-4 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full mb-4"
+      >
+        <i class="fas fa-star text-white text-3xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">
+        Rate {{ tutor.user.username }}
+      </h2>
+      <p class="text-gray-600">Share your experience with other students</p>
+    </div>
+
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      <div>
+        <label for="id_rating" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-star mr-2 text-yellow-500"></i>Rating
+        </label>
+        <select
+          name="rating"
+          id="id_rating"
+          required
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        >
+          <option value="1">⭐ 1 Star - Poor</option>
+          <option value="2">⭐⭐ 2 Stars - Fair</option>
+          <option value="3">⭐⭐⭐ 3 Stars - Good</option>
+          <option value="4">⭐⭐⭐⭐ 4 Stars - Very Good</option>
+          <option value="5" selected>⭐⭐⭐⭐⭐ 5 Stars - Excellent</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="id_review" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-comment-alt mr-2 text-blue-500"></i>Review (Optional)
+        </label>
+        <textarea
+          name="review"
+          id="id_review"
+          rows="6"
+          placeholder="Write your detailed review here... Share what you liked, what could be improved, or any other feedback."
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        ></textarea>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-gradient-to-r from-yellow-500 to-orange-600 text-white py-4 rounded-xl hover:from-yellow-600 hover:to-orange-700 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+      >
+        <i class="fas fa-paper-plane mr-2"></i>Submit Rating
+      </button>
+    </form>
+
+    <a
+      href="{% url 'tutor_detail' tutor.id %}"
+      class="block mt-6 text-center text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+    >
+      <i class="fas fa-arrow-left mr-2"></i>Back to Tutor Profile
+    </a>
+  </div>
+</div>
+{% endblock %}

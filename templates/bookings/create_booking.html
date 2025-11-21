@@ -1,0 +1,118 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Book Session{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto animate-fade-in">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+    <div class="text-center mb-8">
+      <div
+        class="inline-block p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4"
+      >
+        <i class="fas fa-calendar-check text-white text-3xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">Book Session</h2>
+      <p class="text-gray-600">
+        Schedule a session with
+        <span class="font-semibold text-blue-600"
+          >{{ tutor.user.username }}</span
+        >
+      </p>
+    </div>
+
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      <div>
+        <label
+          for="id_subject_id"
+          class="block text-gray-700 font-semibold mb-2"
+        >
+          <i class="fas fa-book mr-2 text-blue-500"></i>Subject
+        </label>
+        <select
+          name="subject_id"
+          id="id_subject_id"
+          required
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        >
+          {% for tutor_subject in tutor_subjects %}
+          <option value="{{ tutor_subject.subject.id }}">
+            {{ tutor_subject.subject.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="id_date" class="block text-gray-700 font-semibold mb-2">
+            <i class="fas fa-calendar mr-2 text-blue-500"></i>Date
+          </label>
+          <input
+            type="date"
+            name="date"
+            id="id_date"
+            required
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+          />
+        </div>
+        <div>
+          <label
+            for="id_start_time"
+            class="block text-gray-700 font-semibold mb-2"
+          >
+            <i class="fas fa-clock mr-2 text-blue-500"></i>Start Time
+          </label>
+          <input
+            type="time"
+            name="start_time"
+            id="id_start_time"
+            required
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label for="id_end_time" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-clock mr-2 text-blue-500"></i>End Time
+        </label>
+        <input
+          type="time"
+          name="end_time"
+          id="id_end_time"
+          required
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        />
+      </div>
+
+      <div>
+        <label for="id_notes" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-sticky-note mr-2 text-blue-500"></i>Notes (Optional)
+        </label>
+        <textarea
+          name="notes"
+          id="id_notes"
+          rows="4"
+          placeholder="Add any special requests or topics you'd like to cover..."
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        ></textarea>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+      >
+        <i class="fas fa-check-circle mr-2"></i>Confirm Booking
+      </button>
+    </form>
+
+    <a
+      href="{% url 'tutor_detail' tutor.id %}"
+      class="block mt-6 text-center text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+    >
+      <i class="fas fa-arrow-left mr-2"></i>Back to Tutor Profile
+    </a>
+  </div>
+</div>
+{% endblock %}

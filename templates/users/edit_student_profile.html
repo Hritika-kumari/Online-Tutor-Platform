@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Student Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto animate-fade-in">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+    <div class="text-center mb-8">
+      <div class="inline-block p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4">
+        <i class="fas fa-user-edit text-white text-3xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">Edit Profile</h2>
+      <p class="text-gray-600">Update your personal information</p>
+    </div>
+    
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+      
+      <!-- Profile Picture -->
+      <div class="text-center mb-6">
+        <div class="inline-block relative">
+          {% if student.user.profile_picture %}
+          <img
+            src="{{ student.user.profile_picture.url }}"
+            alt="Profile Picture"
+            class="w-32 h-32 rounded-full border-4 border-gray-200 object-cover mx-auto mb-4"
+            id="profile-preview"
+          />
+          {% else %}
+          <div class="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white text-4xl font-bold border-4 border-gray-200 mx-auto mb-4" id="profile-preview">
+            {{ student.user.username|first|upper }}
+          </div>
+          {% endif %}
+          <label for="id_profile_picture" class="cursor-pointer">
+            <div class="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
+              <i class="fas fa-camera"></i>
+            </div>
+          </label>
+        </div>
+        <input
+          type="file"
+          name="profile_picture"
+          id="id_profile_picture"
+          accept="image/*"
+          class="hidden"
+          onchange="previewImage(this)"
+        />
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="id_first_name" class="block text-gray-700 font-semibold mb-2">
+            <i class="fas fa-user mr-2 text-blue-500"></i>First Name
+          </label>
+          <input
+            type="text"
+            name="first_name"
+            id="id_first_name"
+            value="{{ student.user.first_name }}"
+            placeholder="Enter your first name"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+          />
+        </div>
+        
+        <div>
+          <label for="id_last_name" class="block text-gray-700 font-semibold mb-2">
+            <i class="fas fa-user mr-2 text-blue-500"></i>Last Name
+          </label>
+          <input
+            type="text"
+            name="last_name"
+            id="id_last_name"
+            value="{{ student.user.last_name }}"
+            placeholder="Enter your last name"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+          />
+        </div>
+      </div>
+      
+      <div>
+        <label for="id_email" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-envelope mr-2 text-blue-500"></i>Email
+        </label>
+        <input
+          type="email"
+          name="email"
+          id="id_email"
+          value="{{ student.user.email }}"
+          required
+          placeholder="Enter your email"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        />
+      </div>
+      
+      <div>
+        <label for="id_phone" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-phone mr-2 text-blue-500"></i>Phone
+        </label>
+        <input
+          type="text"
+          name="phone"
+          id="id_phone"
+          value="{{ student.user.phone }}"
+          placeholder="Enter your phone number"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        />
+      </div>
+      
+      <div>
+        <label for="id_bio" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-align-left mr-2 text-blue-500"></i>Bio
+        </label>
+        <textarea
+          name="bio"
+          id="id_bio"
+          rows="5"
+          placeholder="Tell us about yourself..."
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+        >{{ student.bio }}</textarea>
+      </div>
+      
+      <div class="flex space-x-4">
+        <button
+          type="submit"
+          class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        >
+          <i class="fas fa-save mr-2"></i>Save Changes
+        </button>
+        <a
+          href="{% url 'student_profile' %}"
+          class="px-8 py-4 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 font-semibold transition-all duration-300 flex items-center justify-center"
+        >
+          <i class="fas fa-times mr-2"></i>Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function previewImage(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('profile-preview');
+      if (preview.tagName === 'IMG') {
+        preview.src = e.target.result;
+      } else {
+        preview.outerHTML = `<img src="${e.target.result}" alt="Profile Picture" class="w-32 h-32 rounded-full border-4 border-gray-200 object-cover mx-auto mb-4" id="profile-preview" />`;
+      }
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}
+

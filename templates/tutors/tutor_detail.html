@@ -1,0 +1,180 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}{{ tutor.user.username }} - Tutor Profile{% endblock %}
+
+{% block content %}
+<!-- Tutor Header Card -->
+<div
+  class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl shadow-2xl p-8 mb-8 text-white"
+>
+  <div
+    class="flex flex-col md:flex-row items-start md:items-center justify-between"
+  >
+    <div class="flex-1">
+      <div class="flex items-center space-x-4 mb-4">
+        <div
+          class="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-4xl font-bold border-4 border-white/30"
+        >
+          {{ tutor.user.username|first|upper }}
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold mb-2">
+            {{ tutor.user.get_full_name|default:tutor.user.username }}
+          </h1>
+          <div class="flex items-center space-x-4">
+            <div
+              class="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full"
+            >
+              <i class="fas fa-star text-yellow-300"></i>
+              <span class="font-bold text-xl"
+                >{{ tutor.average_rating|floatformat:1 }} / 5.0</span
+              >
+            </div>
+            <div
+              class="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full"
+            >
+              <i class="fas fa-briefcase"></i>
+              <span>{{ tutor.experience_years }} years</span>
+            </div>
+            <div
+              class="flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full"
+            >
+              <i class="fas fa-dollar-sign"></i>
+              <span>${{ tutor.hourly_rate }}/hour</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if user.is_authenticated and user.role == 'student' %}
+    <a
+      href="{% url 'create_booking' tutor.id %}"
+      class="px-8 py-4 bg-white text-blue-600 rounded-xl hover:bg-blue-50 font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 mt-4 md:mt-0"
+    >
+      <i class="fas fa-calendar-check"></i>
+      <span>Book Session</span>
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <!-- Main Content -->
+  <div class="lg:col-span-2 space-y-6">
+    <!-- About Section -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+      <h2
+        class="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2"
+      >
+        <i class="fas fa-user text-blue-500"></i>
+        <span>About</span>
+      </h2>
+      <p class="text-gray-600 leading-relaxed">
+        {{ tutor.bio|default:"No bio available." }}
+      </p>
+    </div>
+
+    <!-- Subjects Section -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+      <h2
+        class="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2"
+      >
+        <i class="fas fa-book text-blue-500"></i>
+        <span>Subjects</span>
+      </h2>
+      <div class="flex flex-wrap gap-3">
+        {% for tutor_subject in tutor_subjects %}
+        <span
+          class="px-5 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 rounded-full font-semibold border border-blue-200"
+        >
+          <i class="fas fa-check-circle mr-2"></i>{{ tutor_subject.subject.name }}
+        </span>
+        {% empty %}
+        <p class="text-gray-500">No subjects listed.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Availability Section -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+      <h2
+        class="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2"
+      >
+        <i class="fas fa-clock text-blue-500"></i>
+        <span>Availability</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for slot in availability_slots %}
+        <div
+          class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100"
+        >
+          <div class="flex items-center space-x-2 mb-2">
+            <i class="fas fa-calendar-day text-blue-600"></i>
+            <p class="font-bold text-gray-800">
+              {{ slot.get_day_of_week_display }}
+            </p>
+          </div>
+          <div class="flex items-center space-x-2 text-gray-600">
+            <i class="fas fa-clock text-green-600"></i>
+            <span>{{ slot.start_time }} - {{ slot.end_time }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-500 col-span-2">No availability slots set.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews Sidebar -->
+  <div class="lg:col-span-1">
+    <div
+      class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 sticky top-24"
+    >
+      <h2
+        class="text-2xl font-bold text-gray-800 mb-6 flex items-center space-x-2"
+      >
+        <i class="fas fa-star text-yellow-500"></i>
+        <span>Reviews</span>
+      </h2>
+      <div class="space-y-6 max-h-96 overflow-y-auto">
+        {% for rating in ratings %}
+        <div class="border-b border-gray-200 pb-4 last:border-0">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-gray-800"
+              >{{ rating.student.user.username }}</span
+            >
+            <div class="flex">
+              {% for i in "12345" %}
+              <i
+                class="fas fa-star {% if forloop.counter <= rating.rating %}text-yellow-500{% else %}text-gray-300{% endif %} text-sm"
+              ></i>
+              {% endfor %}
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm mb-2">
+            {{ rating.review|default:"No review provided." }}
+          </p>
+          <p class="text-xs text-gray-400">
+            <i class="fas fa-calendar mr-1"></i>{{ rating.created_at|date:"M d, Y" }}
+          </p>
+        </div>
+        {% empty %}
+        <div class="text-center py-8">
+          <i class="fas fa-comment-slash text-4xl text-gray-300 mb-3"></i>
+          <p class="text-gray-500">No reviews yet.</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% if user.is_authenticated and user.role == 'student' %}
+      <a
+        href="{% url 'add_rating' tutor.id %}"
+        class="mt-6 block w-full text-center px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+      >
+        <i class="fas fa-star mr-2"></i>Add Review
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

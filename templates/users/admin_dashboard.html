@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-4xl font-bold text-gray-800 mb-2 flex items-center space-x-3">
+    <i class="fas fa-tachometer-alt text-red-600"></i>
+    <span>Admin Dashboard</span>
+  </h1>
+  <p class="text-gray-600 text-lg">Manage and monitor the platform</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-user-graduate text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ total_students }}</span>
+    </div>
+    <h3 class="font-semibold text-blue-100 mb-1">Total Students</h3>
+    <p class="text-sm text-blue-200">Registered students</p>
+  </div>
+
+  <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-chalkboard-teacher text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ total_tutors }}</span>
+    </div>
+    <h3 class="font-semibold text-green-100 mb-1">Total Tutors</h3>
+    <p class="text-sm text-green-200">Registered teachers</p>
+  </div>
+
+  <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-book text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ total_materials }}</span>
+    </div>
+    <h3 class="font-semibold text-purple-100 mb-1">Total Materials</h3>
+    <p class="text-sm text-purple-200">Uploaded materials</p>
+  </div>
+
+  <div class="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-calendar-check text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ total_bookings }}</span>
+    </div>
+    <h3 class="font-semibold text-orange-100 mb-1">Total Bookings</h3>
+    <p class="text-sm text-orange-200">Session bookings</p>
+  </div>
+</div>
+
+<!-- Students List -->
+<div class="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-gray-100">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+      <i class="fas fa-user-graduate text-blue-500"></i>
+      <span>Registered Students</span>
+      <span class="text-lg text-gray-500 font-normal">({{ total_students }})</span>
+    </h2>
+    <a href="/admin/users/student/" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-2">
+      <i class="fas fa-external-link-alt"></i>
+      <span>View All</span>
+    </a>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="border-b-2 border-gray-200">
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Username</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Email</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Phone</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Joined Date</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          <td class="py-4 px-4">
+            <div class="flex items-center space-x-2">
+              {% if student.user.profile_picture %}
+              <img
+                src="{{ student.user.profile_picture.url }}"
+                alt="{{ student.user.username }}"
+                class="w-8 h-8 rounded-full object-cover"
+              />
+              {% else %}
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                {{ student.user.username|first|upper }}
+              </div>
+              {% endif %}
+              <span class="font-medium">{{ student.user.username }}</span>
+            </div>
+          </td>
+          <td class="py-4 px-4 text-gray-600">{{ student.user.email|default:"-" }}</td>
+          <td class="py-4 px-4 text-gray-600">{{ student.user.phone|default:"-" }}</td>
+          <td class="py-4 px-4 text-gray-600">{{ student.user.created_at|date:"M d, Y" }}</td>
+          <td class="py-4 px-4">
+            {% if student.user.is_active %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+              <i class="fas fa-check-circle mr-1"></i>Active
+            </span>
+            {% else %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+              <i class="fas fa-times-circle mr-1"></i>Inactive
+            </span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="py-12 text-center">
+            <div class="inline-block p-6 bg-gray-100 rounded-full mb-4">
+              <i class="fas fa-user-graduate text-4xl text-gray-400"></i>
+            </div>
+            <p class="text-gray-600 text-lg">No students registered yet.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Tutors List -->
+<div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+      <i class="fas fa-chalkboard-teacher text-green-500"></i>
+      <span>Registered Tutors</span>
+      <span class="text-lg text-gray-500 font-normal">({{ total_tutors }})</span>
+    </h2>
+    <a href="/admin/users/tutor/" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center space-x-2">
+      <i class="fas fa-external-link-alt"></i>
+      <span>View All</span>
+    </a>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="border-b-2 border-gray-200">
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Username</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Email</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Experience</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Hourly Rate</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Status</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Approval</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tutor in tutors %}
+        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          <td class="py-4 px-4">
+            <div class="flex items-center space-x-2">
+              {% if tutor.user.profile_picture %}
+              <img
+                src="{{ tutor.user.profile_picture.url }}"
+                alt="{{ tutor.user.username }}"
+                class="w-8 h-8 rounded-full object-cover"
+              />
+              {% else %}
+              <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                {{ tutor.user.username|first|upper }}
+              </div>
+              {% endif %}
+              <span class="font-medium">{{ tutor.user.username }}</span>
+            </div>
+          </td>
+          <td class="py-4 px-4 text-gray-600">{{ tutor.user.email|default:"-" }}</td>
+          <td class="py-4 px-4 text-gray-600">{{ tutor.experience_years }} years</td>
+          <td class="py-4 px-4 text-gray-600">${{ tutor.hourly_rate }}/hr</td>
+          <td class="py-4 px-4">
+            {% if tutor.user.is_active %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+              <i class="fas fa-check-circle mr-1"></i>Active
+            </span>
+            {% else %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+              <i class="fas fa-times-circle mr-1"></i>Inactive
+            </span>
+            {% endif %}
+          </td>
+          <td class="py-4 px-4">
+            {% if tutor.is_approved %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+              <i class="fas fa-check-circle mr-1"></i>Approved
+            </span>
+            {% else %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+              <i class="fas fa-clock mr-1"></i>Pending
+            </span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="py-12 text-center">
+            <div class="inline-block p-6 bg-gray-100 rounded-full mb-4">
+              <i class="fas fa-chalkboard-teacher text-4xl text-gray-400"></i>
+            </div>
+            <p class="text-gray-600 text-lg">No tutors registered yet.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center space-x-2">
+    <i class="fas fa-bolt text-yellow-500"></i>
+    <span>Quick Actions</span>
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <a href="/admin/" class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 font-semibold transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2">
+      <i class="fas fa-cog"></i>
+      <span>Django Admin Panel</span>
+    </a>
+    <a href="/admin/users/user/" class="px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 font-semibold transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2">
+      <i class="fas fa-users"></i>
+      <span>Manage Users</span>
+    </a>
+    <a href="/admin/bookings/booking/" class="px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 font-semibold transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Manage Bookings</span>
+    </a>
+  </div>
+</div>
+{% endblock %}
+

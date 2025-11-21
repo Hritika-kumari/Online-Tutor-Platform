@@ -1,0 +1,50 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Add Subject{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto animate-fade-in">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+    <div class="text-center mb-8">
+      <div class="inline-block p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4">
+        <i class="fas fa-book text-white text-3xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">Add Subject</h2>
+      <p class="text-gray-600">Add a subject to your teaching profile</p>
+    </div>
+
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+
+      <div>
+        <label for="id_subject_id" class="block text-gray-700 font-semibold mb-2">
+          <i class="fas fa-list mr-2 text-blue-500"></i>Select Subject
+        </label>
+        <select name="subject_id" id="id_subject_id" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+          <option value="">Choose a subject...</option>
+          {% for subject in subjects %}
+          <option value="{{ subject.id }}" {% if subject.id in tutor_subject_ids %}disabled{% endif %}>
+            {{ subject.name }}{% if subject.id in tutor_subject_ids %} (Already Added){% endif %}
+          </option>
+          {% empty %}
+          <option value="" disabled>No subjects available. Please add subjects in the admin panel.</option>
+          {% endfor %}
+        </select>
+        {% if subjects %}
+        <p class="mt-2 text-sm text-gray-500">
+          <i class="fas fa-info-circle mr-1"></i>Subjects marked as "Already Added" are already in your profile.
+        </p>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+        <i class="fas fa-plus-circle mr-2"></i>Add Subject
+      </button>
+    </form>
+
+    <a href="{% url 'tutor_dashboard' %}" class="block mt-6 text-center text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

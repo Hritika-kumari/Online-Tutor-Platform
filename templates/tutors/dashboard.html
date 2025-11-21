@@ -1,0 +1,175 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Tutor Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-4xl font-bold text-gray-800 mb-2 flex items-center space-x-3">
+    <i class="fas fa-tachometer-alt text-blue-600"></i>
+    <span>Tutor Dashboard</span>
+  </h1>
+  <p class="text-gray-600 text-lg">Manage your profile and bookings</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-user-check text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ tutor.experience_years }}</span>
+    </div>
+    <h3 class="font-semibold text-blue-100 mb-1">Years Experience</h3>
+    <p class="text-sm text-blue-200">
+      Profile Status: {% if tutor.is_approved %}
+      <span class="text-green-300 font-bold">Approved</span>
+      {% else %}
+      <span class="text-yellow-300 font-bold">Pending</span>
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-book text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ subjects.count }}</span>
+    </div>
+    <h3 class="font-semibold text-green-100 mb-1">Subjects</h3>
+    <a href="{% url 'add_subject' %}" class="text-sm text-green-200 hover:text-white underline">Add Subject</a>
+  </div>
+
+  <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-clock text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ availability_slots.count }}</span>
+    </div>
+    <h3 class="font-semibold text-purple-100 mb-1">Availability Slots</h3>
+    <a href="{% url 'add_availability' %}" class="text-sm text-purple-200 hover:text-white underline">Add Slot</a>
+  </div>
+</div>
+
+<!-- Additional Info Card -->
+<div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="flex items-center space-x-4">
+      <div class="p-4 bg-blue-100 rounded-xl">
+        <i class="fas fa-dollar-sign text-blue-600 text-2xl"></i>
+      </div>
+      <div>
+        <p class="text-gray-500 text-sm">Hourly Rate</p>
+        <p class="text-2xl font-bold text-gray-800">${{ tutor.hourly_rate }}/hour</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <div class="p-4 bg-yellow-100 rounded-xl">
+        <i class="fas fa-star text-yellow-600 text-2xl"></i>
+      </div>
+      <div>
+        <p class="text-gray-500 text-sm">Average Rating</p>
+        <p class="text-2xl font-bold text-gray-800">{{ tutor.average_rating|floatformat:1 }} / 5.0</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bookings Table -->
+<div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+      <i class="fas fa-calendar-check text-blue-500"></i>
+      <span>Recent Bookings</span>
+    </h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="border-b-2 border-gray-200">
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Student</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Subject</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Date</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Time</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Status</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          <td class="py-4 px-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                {{ booking.student.user.username|first|upper }}
+              </div>
+              <span class="font-medium">{{ booking.student.user.username }}</span>
+            </div>
+          </td>
+          <td class="py-4 px-4">
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">{{ booking.subject.name }}</span>
+          </td>
+          <td class="py-4 px-4 text-gray-600">{{ booking.date }}</td>
+          <td class="py-4 px-4 text-gray-600">
+            <i class="fas fa-clock text-blue-500 mr-1"></i>{{ booking.start_time }} - {{ booking.end_time }}
+          </td>
+          <td class="py-4 px-4">
+            {% if booking.status == 'accepted' %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+              {{ booking.get_status_display }}
+            </span>
+            {% elif booking.status == 'rejected' %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+              {{ booking.get_status_display }}
+            </span>
+            {% elif booking.status == 'completed' %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">
+              {{ booking.get_status_display }}
+            </span>
+            {% else %}
+            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+              {{ booking.get_status_display }}
+            </span>
+            {% endif %}
+          </td>
+          <td class="py-4 px-4">
+            {% if booking.status == 'pending' %}
+            <div class="flex space-x-2">
+              <form method="post" action="{% url 'update_booking_status' booking.id %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="accepted" />
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg">
+                  <i class="fas fa-check mr-1"></i>Accept
+                </button>
+              </form>
+              <form method="post" action="{% url 'update_booking_status' booking.id %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="rejected" />
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg">
+                  <i class="fas fa-times mr-1"></i>Reject
+                </button>
+              </form>
+            </div>
+            {% else %}
+            <span class="text-gray-400 text-sm">-</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="py-12 text-center">
+            <div class="inline-block p-6 bg-gray-100 rounded-full mb-4">
+              <i class="fas fa-calendar-times text-4xl text-gray-400"></i>
+            </div>
+            <p class="text-gray-600 text-lg">No bookings yet.</p>
+            <p class="text-gray-500 text-sm mt-2">Bookings will appear here when students request sessions.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

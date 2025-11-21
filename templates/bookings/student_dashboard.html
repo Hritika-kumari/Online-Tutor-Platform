@@ -1,0 +1,160 @@
+﻿{% extends 'base.html' %} 
+{% block title %}Student Dashboard{% endblock %} 
+{% block content %}
+<div class="mb-8">
+  <h1 class="text-4xl font-bold text-gray-800 mb-2 flex items-center space-x-3">
+    <i class="fas fa-graduation-cap text-blue-600"></i>
+    <span>Student Dashboard</span>
+  </h1>
+  <p class="text-gray-600 text-lg">Manage your bookings and learning journey</p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div
+    class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl p-6 text-white"
+  >
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-calendar-check text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ total_bookings }}</span>
+    </div>
+    <h3 class="font-semibold text-blue-100">Total Bookings</h3>
+  </div>
+
+  <div
+    class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl p-6 text-white"
+  >
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-check-circle text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ accepted_completed_count }}</span>
+    </div>
+    <h3 class="font-semibold text-green-100">Accepted/Completed</h3>
+  </div>
+
+  <div
+    class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl p-6 text-white"
+  >
+    <div class="flex items-center justify-between mb-4">
+      <div class="p-3 bg-white/20 rounded-xl">
+        <i class="fas fa-clock text-2xl"></i>
+      </div>
+      <span class="text-3xl font-bold">{{ pending_count }}</span>
+    </div>
+    <h3 class="font-semibold text-purple-100">Pending</h3>
+  </div>
+</div>
+
+<!-- Bookings Table -->
+<div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+      <i class="fas fa-book-open text-blue-500"></i>
+      <span>My Bookings</span>
+    </h2>
+    <a
+      href="{% url 'tutor_list' %}"
+      class="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 font-semibold transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2"
+    >
+      <i class="fas fa-plus"></i>
+      <span>Book New Session</span>
+    </a>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="border-b-2 border-gray-200">
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Tutor</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">
+            Subject
+          </th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Date</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">Time</th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">
+            Status
+          </th>
+          <th class="text-left py-4 px-4 font-semibold text-gray-700">
+            Action
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+          <td class="py-4 px-4">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold"
+              >
+                {{ booking.tutor.user.username|first|upper }}
+              </div>
+              <span class="font-semibold text-gray-800"
+                >{{ booking.tutor.user.username }}</span
+              >
+            </div>
+          </td>
+          <td class="py-4 px-4">
+            <span
+              class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold"
+              >{{ booking.subject.name }}</span
+            >
+          </td>
+          <td class="py-4 px-4 text-gray-600">
+            <i class="fas fa-calendar text-blue-500 mr-1"></i>{{ booking.date }}
+          </td>
+          <td class="py-4 px-4 text-gray-600">
+            <i class="fas fa-clock text-green-500 mr-1"></i>{{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}
+          </td>
+          <td class="py-4 px-4">
+            <span
+              class="px-3 py-1 rounded-full text-sm font-semibold {% if booking.status == 'accepted' %}bg-green-100 text-green-800{% elif booking.status == 'rejected' %}bg-red-100 text-red-800{% elif booking.status == 'completed' %}bg-blue-100 text-blue-800{% else %}bg-yellow-100 text-yellow-800{% endif %}"
+            >
+              {{ booking.get_status_display }}
+            </span>
+          </td>
+          <td class="py-4 px-4">
+            <div class="flex space-x-2">
+              <a
+                href="{% url 'tutor_detail' booking.tutor.id %}"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg"
+              >
+                <i class="fas fa-eye mr-1"></i>View
+              </a>
+              {% if booking.status == 'completed' %}
+              <a
+                href="{% url 'add_rating_booking' booking.tutor.id booking.id %}"
+                class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg"
+              >
+                <i class="fas fa-star mr-1"></i>Rate
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="py-16 text-center">
+            <div class="inline-block p-6 bg-gray-100 rounded-full mb-4">
+              <i class="fas fa-calendar-plus text-5xl text-gray-400"></i>
+            </div>
+            <p class="text-xl text-gray-600 mb-2">No bookings yet</p>
+            <p class="text-gray-500 mb-6">
+              Start your learning journey by booking a session with a tutor
+            </p>
+            <a
+              href="{% url 'tutor_list' %}"
+              class="inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <i class="fas fa-search mr-2"></i>Browse Tutors
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

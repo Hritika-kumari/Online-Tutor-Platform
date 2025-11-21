@@ -1,0 +1,33 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-gray-800 mb-6">Messages</h1>
+
+<div class="bg-white rounded-lg shadow-md p-6">
+  <h2 class="text-2xl font-bold text-gray-800 mb-4">Conversations</h2>
+  {% if conversation_users %}
+  <div class="space-y-4">
+    {% for user in conversation_users %}
+    <a
+      href="{% url 'chat' user.id %}"
+      class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+    >
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="font-semibold text-gray-800">{{ user.username }}</h3>
+          <p class="text-gray-600 text-sm">
+            {{ user.get_full_name|default:"" }}
+          </p>
+        </div>
+        <span class="text-blue-600">→</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-gray-600">No conversations yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
